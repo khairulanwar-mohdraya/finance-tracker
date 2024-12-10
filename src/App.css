@@ -47,3 +47,39 @@ header {
   padding: 10px;
   font-size: 16px;
 }
+
+.manual-entry-section {
+  margin: 20px auto;
+  max-width: 1000px;
+  padding: 20px;
+}
+
+.manual-entry-section form {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  padding: 15px;
+}
+
+.manual-entry-section input,
+.manual-entry-section select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.manual-entry-section button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 35px;
+}
+
+.manual-entry-section button:hover {
+  background-color: #45a049;
+}

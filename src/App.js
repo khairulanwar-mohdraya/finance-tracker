@@ -9,6 +9,71 @@ GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.min.js");
 function App() {
   const [entries, setEntries] = useState([]);
 
+  // Add new state for form inputs
+  const [newTransaction, setNewTransaction] = useState({
+    date: '',
+    description: '',
+    amount: '',
+    type: 'Expense'
+  });
+
+  // Add new handler for form submission
+  const handleManualAdd = (e) => {
+    e.preventDefault();
+    
+    // Format the date to match the PDF format (DD/MM/YY)
+    const formattedDate = new Date(newTransaction.date).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+
+    const transaction = {
+      ...newTransaction,
+      date: formattedDate,  // Use the formatted date
+      amount: parseFloat(newTransaction.amount)
+    };
+
+    // Convert all dates to timestamps for comparison
+    const newDate = new Date(newTransaction.date).getTime();
+    
+    // Create new array with the new transaction inserted in the correct position
+    const updatedEntries = [...entries];
+    const insertIndex = updatedEntries.findIndex(entry => {
+      // Split the date parts and rearrange to YYYY-MM-DD format for proper comparison
+      const [day, month, year] = entry.date.split('/');
+      const entryDate = new Date(`20${year}-${month}-${day}`).getTime();
+      return newDate < entryDate;
+    });
+
+    if (insertIndex === -1) {
+      // If no earlier date found, append to the end
+      updatedEntries.push(transaction);
+    } else {
+      // Insert at the correct position
+      updatedEntries.splice(insertIndex, 0, transaction);
+    }
+
+    setEntries(updatedEntries);
+    
+    // Reset form
+    setNewTransaction({
+      date: '',
+      description: '',
+      amount: '',
+      type: 'Expense'
+    });
+  };
+
+  // Add new handler for form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewTransaction({
+      ...newTransaction,
+      [name]: value
+    });
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -87,6 +152,45 @@ function App() {
       <header>
         <h1>Simple Finance Tracker</h1>
       </header>
+      <div className="manual-entry-section">
+        <h3>Add Transaction Manually</h3>
+        <form onSubmit={handleManualAdd}>
+          <input
+            type="date"
+            name="date"
+            value={newTransaction.date}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="description"
+            placeholder="Description"
+            value={newTransaction.description}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            step="0.01"
+            value={newTransaction.amount}
+            onChange={handleInputChange}
+            required
+          />
+          <select
+            name="type"
+            value={newTransaction.type}
+            onChange={handleInputChange}
+          >
+            <option value="Expense">Expense</option>
+            <option value="Income">Income</option>
+          </select>
+          <button type="submit">Add Transaction</button>
+        </form>
+      </div>
+
       <div className="upload-section">
         <h3>Upload Bank Statement (PDF)</h3>
         <input type="file" accept="application/pdf" onChange={handleFileUpload} />
