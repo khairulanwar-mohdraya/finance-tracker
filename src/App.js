@@ -3,66 +3,61 @@ import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import "./App.css";
 
-// Set the worker source globally
-GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.min.js");
+// You can replace this with your actual logo
+const LOGO_URL = "https://via.placeholder.com/40";
 
 function App() {
   const [entries, setEntries] = useState([]);
-
-  // Add new state for form inputs
   const [newTransaction, setNewTransaction] = useState({
     date: '',
     description: '',
     amount: '',
     type: 'Expense'
   });
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   // Add new handler for form submission
   const handleManualAdd = (e) => {
     e.preventDefault();
-    
-    // Format the date to match the PDF format (DD/MM/YY)
-    const formattedDate = new Date(newTransaction.date).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    });
 
-    const transaction = {
-      ...newTransaction,
-      date: formattedDate,  // Use the formatted date
-      amount: parseFloat(newTransaction.amount)
-    };
+     // Format the date to match the PDF format (DD/MM/YY)
+  const formattedDate = new Date(newTransaction.date).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  });
 
-    // Convert all dates to timestamps for comparison
-    const newDate = new Date(newTransaction.date).getTime();
-    
-    // Create new array with the new transaction inserted in the correct position
-    const updatedEntries = [...entries];
-    const insertIndex = updatedEntries.findIndex(entry => {
-      // Split the date parts and rearrange to YYYY-MM-DD format for proper comparison
-      const [day, month, year] = entry.date.split('/');
-      const entryDate = new Date(`20${year}-${month}-${day}`).getTime();
-      return newDate < entryDate;
-    });
+  const transaction = {
+    ...newTransaction,
+    date: formattedDate,
+    amount: parseFloat(newTransaction.amount)
+  };
 
-    if (insertIndex === -1) {
-      // If no earlier date found, append to the end
-      updatedEntries.push(transaction);
-    } else {
-      // Insert at the correct position
-      updatedEntries.splice(insertIndex, 0, transaction);
-    }
+   // Create new array with the new transaction inserted in the correct position
+   const updatedEntries = [...entries];
 
-    setEntries(updatedEntries);
-    
+   // Helper function to convert date string to comparable timestamp
+  const getTimestamp = (dateStr) => {
+    const [day, month, year] = dateStr.split('/');
+    // Ensure year is interpreted as 20XX
+    const fullYear = year.length === 2 ? `20${year}` : year;
+    return new Date(`${fullYear}-${month}-${day}`).getTime();
+  };
+
+  // Sort all entries including the new one
+  const sortedEntries = [...updatedEntries, transaction].sort((a, b) => {
+    return getTimestamp(a.date) - getTimestamp(b.date);
+  });
+
+  setEntries(sortedEntries);
+
     // Reset form
-    setNewTransaction({
-      date: '',
-      description: '',
-      amount: '',
-      type: 'Expense'
-    });
+  setNewTransaction({
+    date: '',
+    description: '',
+    amount: '',
+    type: 'Expense'
+  });
   };
 
   // Add new handler for form input changes
@@ -148,77 +143,121 @@ function App() {
   
 
   return (
-    <div className="App">
-      <header>
-        <h1>Simple Finance Tracker</h1>
-      </header>
-      <div className="manual-entry-section">
-        <h3>Add Transaction Manually</h3>
-        <form onSubmit={handleManualAdd}>
-          <input
-            type="date"
-            name="date"
-            value={newTransaction.date}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Description"
-            value={newTransaction.description}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="amount"
-            placeholder="Amount"
-            step="0.01"
-            value={newTransaction.amount}
-            onChange={handleInputChange}
-            required
-          />
-          <select
-            name="type"
-            value={newTransaction.type}
-            onChange={handleInputChange}
-          >
-            <option value="Expense">Expense</option>
-            <option value="Income">Income</option>
-          </select>
-          <button type="submit">Add Transaction</button>
-        </form>
-      </div>
+    <div className="app-container">
+      {/* Sidebar */}
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
+        <div className="sidebar-header">
+          <img src={LOGO_URL} alt="Logo" className="logo" />
+          <button className="toggle-btn" onClick={() => setSidebarOpen(!isSidebarOpen)}>
+            ☰
+          </button>
+        </div>
+        <nav className="sidebar-nav">
+          <ul>
+            <li className="active"><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#transactions">Transactions</a></li>
+            <li><a href="#reports">Reports</a></li>
+            <li><a href="#settings">Settings</a></li>
+          </ul>
+        </nav>
+      </aside>
 
-      <div className="upload-section">
-        <h3>Upload Bank Statement (PDF)</h3>
-        <input type="file" accept="application/pdf" onChange={handleFileUpload} />
-      </div>
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Top Header */}
+        <header className="top-header">
+          <div className="header-left">
+            <h1>Finance Tracker</h1>
+          </div>
+          <div className="header-right">
+            <div className="search-bar">
+              <input type="search" placeholder="Search transactions..." />
+            </div>
+            <div className="user-profile">
+              <img src="https://via.placeholder.com/32" alt="Profile" className="profile-pic" />
+              <div className="profile-menu">
+                <span>John Doe</span>
+                <button className="logout-btn">Logout</button>
+              </div>
+            </div>
+          </div>
+        </header>
 
-      <div className="entries">
-        <h2>Entries</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry, index) => (
-              <tr key={index}>
-                <td>{entry.date}</td>
-                <td>{entry.type}</td>
-                <td>{entry.amount}</td>
-                <td>{entry.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        {/* Content Area */}
+        <div className="content-area">
+          <div className="card">
+            <div className="manual-entry-section">
+              <h3>Add Transaction</h3>
+              <form onSubmit={handleManualAdd}>
+                <input
+                  type="date"
+                  name="date"
+                  value={newTransaction.date}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Description"
+                  value={newTransaction.description}
+                  onChange={handleInputChange}
+                  required
+                />
+                <input
+                  type="number"
+                  name="amount"
+                  placeholder="Amount"
+                  step="0.01"
+                  value={newTransaction.amount}
+                  onChange={handleInputChange}
+                  required
+                />
+                <select
+                  name="type"
+                  value={newTransaction.type}
+                  onChange={handleInputChange}
+                >
+                  <option value="Expense">Expense</option>
+                  <option value="Income">Income</option>
+                </select>
+                <button type="submit">Add Transaction</button>
+              </form>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="upload-section">
+              <h3>Upload Bank Statement</h3>
+              <input type="file" accept="application/pdf" onChange={handleFileUpload} />
+            </div>
+          </div>
+
+          <div className="card transactions-table">
+            <h2>Recent Transactions</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map((entry, index) => (
+                  <tr key={index}>
+                    <td>{entry.date}</td>
+                    <td>{entry.type}</td>
+                    <td>{entry.amount}</td>
+                    <td>{entry.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
