@@ -129,6 +129,7 @@ function App() {
           description: "Beginning Balance",
           amount: beginningBalance,
           type: "Income",
+          balance: beginningBalance,
           details: ""
         });
       }
@@ -145,6 +146,7 @@ function App() {
         const [_, date, description, transactionAmount, balance, details = ""] = match;
         
         const amount = parseFloat(transactionAmount.replace(",", "").replace("-", "").replace("+", ""));
+        const currentBalance = parseFloat(balance.replace(",", ""));
         
         const type = transactionAmount.includes("-") ? "Expense" : "Income";
   
@@ -153,6 +155,7 @@ function App() {
           description: description.trim(),
           amount,
           type,
+          balance: currentBalance,
           details: details.trim()
         });
       } else {
@@ -165,10 +168,11 @@ function App() {
     if (endingBalanceMatch) {
       const endingBalance = parseFloat(endingBalanceMatch[1].replace(",", ""));
       transactions.push({
-        date: "",  // No specific date for ending balance
+        date: "",
         description: "ENDING BALANCE",
         amount: endingBalance,
-        type: "Income",  // Treat as income for display purposes
+        type: "Income",
+        balance: endingBalance,
         details: ""
       });
     }
@@ -280,6 +284,7 @@ function App() {
                   <th>Description</th>
                   <th>Income</th>
                   <th>Expense</th>
+                  <th>Balance</th>
                   <th>Details</th>
                 </tr>
               </thead>
@@ -288,8 +293,15 @@ function App() {
                   <tr key={index}>
                     <td>{entry.date}</td>
                     <td>{entry.description}</td>
-                    <td>{entry.type === 'Income' ? entry.amount.toFixed(2) : ''}</td>
+                    <td>
+                      {entry.type === 'Income' && 
+                       entry.description !== 'ENDING BALANCE' && 
+                       entry.description !== 'Beginning Balance'
+                        ? entry.amount.toFixed(2) 
+                        : ''}
+                    </td>
                     <td>{entry.type === 'Expense' ? entry.amount.toFixed(2) : ''}</td>
+                    <td>{entry.balance ? entry.balance.toFixed(2) : ''}</td>
                     <td>{entry.details}</td>
                   </tr>
                 ))}
@@ -299,7 +311,9 @@ function App() {
                   <td>
                     <strong>
                       {entries
-                        .filter(entry => entry.type === 'Income')
+                        .filter(entry => entry.type === 'Income' && 
+                               entry.description !== 'ENDING BALANCE' &&
+                               entry.description !== 'Beginning Balance')
                         .reduce((sum, entry) => sum + entry.amount, 0)
                         .toFixed(2)}
                     </strong>
