@@ -1,0 +1,121 @@
+.transactions-table {
+  overflow-x: auto;
+}
+
+.transactions-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.transactions-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+.transactions-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.transactions-table td:nth-child(3),
+.transactions-table td:nth-child(4),
+.transactions-table td:nth-child(5),
+.transactions-table th:nth-child(3),
+.transactions-table th:nth-child(4),
+.transactions-table th:nth-child(5) {
+  text-align: right;
+  padding-right: 2rem;
+}
+
+/* Category tag styles */
+.category-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.category-tag.transportation {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.category-tag.foodandbeverages {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.category-tag.shopping {
+  background-color: #fce7f3;
+  color: #9d174d;
+}
+
+.category-tag.groceries {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.category-tag.utilities {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.category-tag.transfer {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.category-tag.medical {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.category-tag.education {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.category-tag.others {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.category-tag.balance {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.category-tag.loan {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.transactions-table .total-row {
+  border-top: 2px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.transactions-table .total-row td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .transactions-table {
+    font-size: 0.875rem;
+  }
+  
+  .transactions-table td,
+  .transactions-table th {
+    padding: 0.5rem;
+  }
+} 
