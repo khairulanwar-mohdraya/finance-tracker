@@ -107,33 +107,71 @@ function App() {
   const processPDFData = (pdfText) => {
     console.log("Processing PDF text:", pdfText);
   
+    // First, try to extract beginning balance
+    const beginningBalanceMatch = pdfText.match(/BEGINNING BALANCE\s+([\d,]+\.\d{2})/);
+    const beginningBalance = beginningBalanceMatch 
+      ? parseFloat(beginningBalanceMatch[1].replace(",", ""))
+      : null;
+  
     // Step 1: Split concatenated transactions by dates
     const splitLines = splitByDates(pdfText);
     console.log("Split lines by dates:", splitLines);
   
     // Step 2: Apply regex to extract transactions
     const transactions = [];
+  
+    // Add beginning balance as first transaction if found
+    if (beginningBalance) {
+      const firstDateMatch = pdfText.match(/(\d{2}\/\d{2}\/\d{2})/);
+      if (firstDateMatch) {
+        transactions.push({
+          date: firstDateMatch[1],
+          description: "Beginning Balance",
+          amount: beginningBalance,
+          type: "Income",
+          details: ""
+        });
+      }
+    }
+  
     splitLines.forEach((line) => {
+      // Updated regex to handle transactions without details
       const match = line.match(
-        /(\d{2}\/\d{2}\/\d{2})\s+([A-Za-z0-9\s\-@*.,'/]+)\s+([\d.,]+[-]?)\s+([\d.,]+)/
+        /(\d{2}\/\d{2}\/\d{2})\s+([^0-9]+?)\s+([\d.,]+[-+])\s+([\d,]+\.\d{2})(?:\s+(.*?))?(?=\s+\d{2}\/\d{2}\/\d{2}|\s+Maybank|$)/
       );
       
       if (match) {
         console.log("Matched transaction:", match);
-        const [_, date, description, amount] = match;
-  
-        const type = amount.includes("-") ? "Expense" : "Income";
+        const [_, date, description, transactionAmount, balance, details = ""] = match;
+        
+        const amount = parseFloat(transactionAmount.replace(",", "").replace("-", "").replace("+", ""));
+        
+        const type = transactionAmount.includes("-") ? "Expense" : "Income";
   
         transactions.push({
           date,
           description: description.trim(),
-          amount: parseFloat(amount.replace(",", "").replace("-", "")),
+          amount,
           type,
+          details: details.trim()
         });
       } else {
         console.log("Unmatched line:", line);
       }
     });
+  
+    // Extract ending balance
+    const endingBalanceMatch = pdfText.match(/ENDING BALANCE\s*:\s*([\d,]+\.\d{2})/);
+    if (endingBalanceMatch) {
+      const endingBalance = parseFloat(endingBalanceMatch[1].replace(",", ""));
+      transactions.push({
+        date: "",  // No specific date for ending balance
+        description: "ENDING BALANCE",
+        amount: endingBalance,
+        type: "Income",  // Treat as income for display purposes
+        details: ""
+      });
+    }
   
     console.log("Extracted transactions:", transactions);
   
@@ -239,20 +277,43 @@ function App() {
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Type</th>
-                  <th>Amount</th>
                   <th>Description</th>
+                  <th>Income</th>
+                  <th>Expense</th>
+                  <th>Details</th>
                 </tr>
               </thead>
               <tbody>
                 {entries.map((entry, index) => (
                   <tr key={index}>
                     <td>{entry.date}</td>
-                    <td>{entry.type}</td>
-                    <td>{entry.amount}</td>
                     <td>{entry.description}</td>
+                    <td>{entry.type === 'Income' ? entry.amount.toFixed(2) : ''}</td>
+                    <td>{entry.type === 'Expense' ? entry.amount.toFixed(2) : ''}</td>
+                    <td>{entry.details}</td>
                   </tr>
                 ))}
+                <tr className="total-row">
+                  <td></td>
+                  <td><strong>Total</strong></td>
+                  <td>
+                    <strong>
+                      {entries
+                        .filter(entry => entry.type === 'Income')
+                        .reduce((sum, entry) => sum + entry.amount, 0)
+                        .toFixed(2)}
+                    </strong>
+                  </td>
+                  <td>
+                    <strong>
+                      {entries
+                        .filter(entry => entry.type === 'Expense')
+                        .reduce((sum, entry) => sum + entry.amount, 0)
+                        .toFixed(2)}
+                    </strong>
+                  </td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>

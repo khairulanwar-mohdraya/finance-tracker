@@ -173,6 +173,38 @@
   background-color: #f8fafc;
 }
 
+.transactions-table td:nth-child(3),
+.transactions-table td:nth-child(4),
+.transactions-table th:nth-child(3),
+.transactions-table th:nth-child(4) {
+  text-align: right;
+  padding-right: 2rem;
+}
+
+.transactions-table td:nth-child(3) {  /* Income column */
+  color: #16a34a;  /* green */
+}
+
+.transactions-table td:nth-child(4) {  /* Expense column */
+  color: #dc2626;  /* red */
+}
+
+.transactions-table td:nth-child(5) {
+  max-width: 300px; /* Adjust as needed */
+  word-wrap: break-word;
+  padding-left: 1rem;
+}
+
+.transactions-table .total-row {
+  border-top: 2px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.transactions-table .total-row td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 /* Upload Section Styles */
 .upload-section input[type="file"] {
   padding: 1rem;
