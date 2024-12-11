@@ -6,6 +6,7 @@ import TransactionForm from './components/Forms/TransactionForm';
 import FileUploadForm from './components/Forms/FileUploadForm';
 import TransactionTable from './components/TransactionTable/TransactionTable';
 import { processPDFData } from './utils/pdfUtils';
+import ExpensePieChart from './components/Charts/ExpensePieChart';
 import "./App.css";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
     type: 'Expense'
   });
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [showChart, setShowChart] = useState(false);
 
   const handleManualAdd = (e) => {
     e.preventDefault();
@@ -55,6 +57,19 @@ function App() {
 
   return (
     <Layout isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen}>
+      <div className="content-controls">
+        <button 
+          className="chart-toggle-btn"
+          onClick={() => setShowChart(!showChart)}
+        >
+          {showChart ? 'Hide Chart' : 'Show Expense Chart'}
+        </button>
+      </div>
+      
+      {showChart && entries.length > 0 && (
+        <ExpensePieChart entries={entries} />
+      )}
+      
       <TransactionForm
         newTransaction={newTransaction}
         onInputChange={handleInputChange}
