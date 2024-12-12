@@ -1,0 +1,144 @@
+/* Layout Container */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--card-background);
+  border-right: 1px solid #e2e8f0;
+  padding: 1rem;
+  transition: width 0.3s ease;
+}
+
+.sidebar.closed {
+  width: 64px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logo {
+  height: 40px;
+  width: 40px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  margin-top: 2rem;
+}
+
+.sidebar-nav li {
+  margin: 0.5rem 0;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #1f2937;
+  text-decoration: none;
+  border-radius: 0.5rem;
+}
+
+.sidebar-nav li.active a,
+.sidebar-nav a:hover {
+  background-color: #e2e8f0;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.content-area {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Top Header Styles */
+.top-header {
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background: var(--card-background);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-bar input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  width: 300px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .header-right {
+    display: none;
+  }
+} 

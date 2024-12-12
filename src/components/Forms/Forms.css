@@ -1,0 +1,47 @@
+.manual-entry-section form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.manual-entry-section input,
+.manual-entry-section select {
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  flex: 1;
+}
+
+.manual-entry-section button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.manual-entry-section button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Upload Section Styles */
+.upload-section {
+  padding: 1rem 0;
+}
+
+.upload-section input[type="file"] {
+  padding: 1rem;
+  border: 2px dashed #e2e8f0;
+  border-radius: 0.5rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .manual-entry-section form {
+    flex-direction: column;
+  }
+} 
