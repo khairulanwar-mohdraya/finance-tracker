@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import { GlobalWorkerOptions } from "pdfjs-dist";
+import { 
+  Flex, 
+  View, 
+  Button, 
+  Card, 
+  Heading, 
+  ThemeProvider 
+} from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+
 import Layout from './components/Layout/Layout';
 import TransactionForm from './components/Forms/TransactionForm';
 import FileUploadForm from './components/Forms/FileUploadForm';
@@ -19,10 +28,24 @@ function App() {
   });
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [showChart, setShowChart] = useState(false);
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [showFileUpload, setShowFileUpload] = useState(false);
 
   const handleManualAdd = (e) => {
     e.preventDefault();
-    // ... existing handleManualAdd logic ...
+    // Implement the logic to add a new transaction
+    const transaction = {
+      ...newTransaction,
+      amount: parseFloat(newTransaction.amount)
+    };
+    setEntries([...entries, transaction]);
+    // Reset the form
+    setNewTransaction({
+      date: '',
+      description: '',
+      amount: '',
+      type: 'Expense'
+    });
   };
 
   const handleInputChange = (e) => {
@@ -56,28 +79,59 @@ function App() {
   };
 
   return (
-    <Layout isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen}>
-      <div className="content-controls">
-        <button 
-          className="chart-toggle-btn"
-          onClick={() => setShowChart(!showChart)}
-        >
-          {showChart ? 'Hide Chart' : 'Show Expense Chart'}
-        </button>
-      </div>
-      
-      {showChart && entries.length > 0 && (
-        <ExpensePieChart entries={entries} />
-      )}
-      
-      <TransactionForm
-        newTransaction={newTransaction}
-        onInputChange={handleInputChange}
-        onSubmit={handleManualAdd}
-      />
-      <FileUploadForm onUpload={handleFileUpload} />
-      <TransactionTable entries={entries} />
-    </Layout>
+    <ThemeProvider>
+      <View padding="1rem">
+        <Flex direction="column" gap="1rem">
+          <Heading level={1}>Expense Tracker</Heading>
+          
+          <Card variation="outlined">
+            <Flex direction="column" gap="1rem">
+              {/* Chart Section */}
+              <Button 
+                onClick={() => setShowChart(!showChart)}
+                variation="primary"
+              >
+                {showChart ? 'Hide Chart' : 'Show Expense Chart'}
+              </Button>
+              
+              {showChart && entries.length > 0 && (
+                <ExpensePieChart entries={entries} />
+              )}
+
+              {/* Transaction Form Section */}
+              <Button 
+                onClick={() => setShowTransactionForm(!showTransactionForm)}
+                variation="primary"
+              >
+                {showTransactionForm ? 'Hide Transaction Form' : 'Add Transaction'}
+              </Button>
+              
+              {showTransactionForm && (
+                <TransactionForm
+                  newTransaction={newTransaction}
+                  onInputChange={handleInputChange}
+                  onSubmit={handleManualAdd}
+                />
+              )}
+
+              {/* File Upload Section */}
+              <Button 
+                onClick={() => setShowFileUpload(!showFileUpload)}
+                variation="primary"
+              >
+                {showFileUpload ? 'Hide File Upload' : 'Upload Bank Statement'}
+              </Button>
+              
+              {showFileUpload && (
+                <FileUploadForm onUpload={handleFileUpload} />
+              )}
+
+              <TransactionTable entries={entries} />
+            </Flex>
+          </Card>
+        </Flex>
+      </View>
+    </ThemeProvider>
   );
 }
 

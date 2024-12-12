@@ -1,49 +1,51 @@
 import React from 'react';
-import './Forms.css';
+import { 
+  TextField, 
+  SelectField, 
+  Button, 
+  Flex 
+} from "@aws-amplify/ui-react";
 
-const TransactionForm = ({ newTransaction, onInputChange, onSubmit }) => {
+function TransactionForm({ newTransaction, onInputChange, onSubmit }) {
   return (
-    <div className="card">
-      <div className="manual-entry-section">
-        <h3>Add Transaction</h3>
-        <form onSubmit={onSubmit}>
-          <input
-            type="date"
-            name="date"
-            value={newTransaction.date}
-            onChange={onInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Description"
-            value={newTransaction.description}
-            onChange={onInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="amount"
-            placeholder="Amount"
-            step="0.01"
-            value={newTransaction.amount}
-            onChange={onInputChange}
-            required
-          />
-          <select
-            name="type"
-            value={newTransaction.type}
-            onChange={onInputChange}
-          >
-            <option value="Expense">Expense</option>
-            <option value="Income">Income</option>
-          </select>
-          <button type="submit">Add Transaction</button>
-        </form>
-      </div>
-    </div>
+    <Flex as="form" direction="column" gap="1rem" onSubmit={onSubmit}>
+      <TextField
+        label="Date"
+        name="date"
+        type="date"
+        value={newTransaction.date}
+        onChange={onInputChange}
+        required
+      />
+      <TextField
+        label="Description"
+        name="description"
+        value={newTransaction.description}
+        onChange={onInputChange}
+        required
+      />
+      <TextField
+        label="Amount"
+        name="amount"
+        type="number"
+        value={newTransaction.amount}
+        onChange={onInputChange}
+        required
+      />
+      <SelectField
+        label="Type"
+        name="type"
+        value={newTransaction.type}
+        onChange={onInputChange}
+      >
+        <option value="Expense">Expense</option>
+        <option value="Income">Income</option>
+      </SelectField>
+      <Button type="submit" variation="primary">
+        Add Transaction
+      </Button>
+    </Flex>
   );
-};
+}
 
 export default TransactionForm; 
